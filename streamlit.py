@@ -3,135 +3,122 @@ import os
 from pathlib import Path
 
 # --- CONFIG ---
-# Setting the root to your absolute path provided
-RESULTS_DIR = Path("/volatile/home/sb283337/Bureau/7T-fMRI-Motor-Stroke/results_V01")
-st.set_page_config(page_title="Motif-Stroke Viewer", layout="wide")
+RESULTS_DIR = Path(__file__).parent / "results_V01"
+
+st.set_page_config(page_title="Motif-Stroke | 7T fMRI", layout="wide")
 
 # --- SIDEBAR ---
-st.sidebar.title("🚀 Motif-Stroke Explorer")
-page = st.sidebar.radio("Navigation", ["Home", "Analysis Dashboard"])
+st.sidebar.title("🧠 Motif-Stroke")
+page = st.sidebar.radio("Navigation", ["Welcome Home", "Analysis Dashboard"])
 
-if page == "Home":
-    st.title("🧠 Motif-Stroke Explorer: User Guide")
+# --- PAGE 1: WELCOME HOME ---
+if page == "Welcome Home":
+    st.title("🏥 Motif-Stroke: 7T Motor Mapping Explorer")
     
     st.markdown("""
-    This application is a visual interface for 7T fMRI motor mapping. 
-    Follow the steps below to navigate the data and interpret the statistical results.
+    ### Welcome! 👋
+    This application allows to explore the high-resolution functional brain maps generated for the **Motif-Stroke** project. 
+    
+    The platform provides access to the statistical analyses performed on the fMRI data of the subjects and patients of the project.
     """)
 
-    # --- SECTION 1: SELECTION ---
-    st.header("1️⃣ How to Select Data")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("""
-        **Sidebar Navigation:**
-        - **Subject**: Choose the patient ID.
-        - **Method**: Choose the Matrix Design. 
-            - *Sequence*: Theoretical task timing.
-            - *Behavioral*: Timing adjusted by patient response.
-        - **Contrast**: Choose the limb comparison (e.g., `hand_vs_foot`).
-        """)
-    with col2:
-        st.info("""
-        **Pro Tip:** If you change the Subject, the 'Method' and 'Contrast' lists will update automatically to show only what is available for that specific patient.
-        """)
+    st.info("""
+    **🏗 Project Status:** This study is currently active. We are constantly updating the subjects 
+    and refining our analysis methods. If you don't see a specific result yet, it's likely still being processed!
+    """)
 
     st.divider()
 
-    # --- SECTION 2: INTERPRETATION ---
-    st.header("2️⃣ What am I looking at?")
-    
+    st.subheader("🚀 How to get started")
     st.markdown("""
-    When you open the **Results Gallery**, you see five diagnostic maps. Here is how to interpret them:
-    """)
-
-    # Using a table for clear interpretation logic
-    st.table([
-        {"Map": "Beta", "Description": "Effect Size", "Interpretation": "Shows the 'strength' of the BOLD signal. Higher = more oxygenated blood flow."},
-        #{"Map": "TOTAL_02_variance", "Description": "Noise/Error", "Interpretation": "Shows where the data is 'messy'. High variance in motor cortex suggests motion artifacts."},
-        {"Map": "Tstat", "Description": "Signal-to-Noise", "Interpretation": "The Ratio of Beta/Variance. Shows how reliable the activation is."},
-        {"Map": "Zmap (FDR)", "Description": "The 'Truth'", "Interpretation": "Corrected for thousands of tests. If you see color here, it is statistically significant (q < 0.05)."}
-    ])
-
-    # --- SECTION 3: MOTOR ANATOMY ---
-    st.header("3️⃣ Anatomical Verification")
-    st.write("""
-    For motor tasks, check for activation along the **Precentral Gyrus**. 
-    - **Hands**: Look for the 'Hand Knob' in the middle of the motor strip.
-    - **Feet**: Look at the medial wall (top-middle of the brain).
+    1. Click on **Analysis Dashboard** in the left sidebar.
+    2. Pick a **Subject** and the **Design Method** you want to compare.
+    3. Explore the **Total Z-Map** for the big picture, or dive into **Run Details** for a closer look.
     """)
     
     
 
-    st.success("🚀 Ready? Select 'Analysis Dashboard' in the sidebar to begin.")
-
+# --- PAGE 2: ANALYSIS DASHBOARD ---
 else:
     if not RESULTS_DIR.exists():
-        st.error(f"Directory not found: {RESULTS_DIR}")
+        st.warning("### 🚧 Analysis in progress\nThe results directory is currently being updated. Please check back later.")
         st.stop()
 
-    # --- SELECTION ---
+    # --- SIDEBAR SELECTION ---
     subjects = sorted([d.name for d in RESULTS_DIR.glob("sub-*")])
-    selected_sub = st.sidebar.selectbox("Patient", subjects)
+    selected_sub = st.sidebar.selectbox("👤 Select a Subject", subjects)
 
     sub_path = RESULTS_DIR / selected_sub
-    methods = sorted([d.name for d in sub_path.iterdir() if d.is_dir()])
-    selected_method = st.sidebar.selectbox("Method", methods)
-
-    contrast_path = sub_path / selected_method
-    contrasts = sorted([d.name for d in contrast_path.iterdir() if d.is_dir()])
-    selected_contrast = st.sidebar.selectbox("Contrast", contrasts)
-
-    # --- PATHS ---
-    # Path: sub-02 / sequence_method / global_right_vs_left / combined_total
-    total_dir = contrast_path / selected_contrast / "combined_total"
-
-    st.title(f"📊 {selected_sub} Results")
     
-    tab_fusion, tab_runs = st.tabs(["🎯 Total", "🔎 By Run"])
+    if not sub_path.exists():
+        st.info(f"### ⏳ Subject {selected_sub} analysis is ongoing.")
+        st.stop()
 
-    with tab_fusion:
+    methods = sorted([d.name for d in sub_path.iterdir() if d.is_dir()])
+    selected_method = st.sidebar.selectbox("📐 Select Design Method", methods)
+
+    method_path = sub_path / selected_method
+    contrasts = sorted([d.name for d in method_path.iterdir() if d.is_dir()])
+    selected_contrast = st.sidebar.selectbox("🎯 Select Contrast", contrasts)
+
+    # --- MAIN CONTENT ---
+    st.title(f"📊 Results: {selected_sub}")
+    
+    # User-Friendly Interpretation Guide
+    guide_col1, guide_col2 = st.columns(2)
+    with guide_col1:
+        st.subheader("🎨 Color Guide")
+        st.markdown("""
+        * **🔴 Red Areas**: The brain was more active for the **first** part of your selection.
+        * **🔵 Blue Areas**: The brain was more active for the **second** (subtracted) part.
+        """)
+
+    with guide_col2:
+        st.subheader("📊 What does this map show?")
+        st.markdown("""
+        We use an **FDR threshold (0.05)**. In simple terms: there is a **95% confidence** that the displayed activations represent true neural 
+        responses..
+        The maps represent Z-scores thresholded using **False Discovery Rate (FDR)** at $q < 0.05$. 
+
+        """)
+    
+    
+
+    st.divider()
+    
+    # Clear Context Label
+    st.markdown(f"**Current View:** {selected_contrast.replace('_', ' ').upper()} | **Model:** {selected_method.replace('_', ' ').upper()}")
+    
+    total_dir = method_path / selected_contrast / "combined_total"
+    tab_total, tab_runs = st.tabs(["🎯 Total Summary Map", "🔎 Detailed Run-by-Run"])
+
+    with tab_total:
         if total_dir.exists():
-            st.subheader("Diagnostic Maps")
-            
-            # We map your 01-05 naming convention
-            diagnostic_maps = {
-                "01 - Beta (Effect Size)": "TOTAL_01_beta.png",
-                "02 - Variance (Noise)": "TOTAL_02_variance.png",
-                "03 - T-Stat (Reliability)": "TOTAL_03_tstat.png",
-               # "04 - Z-Map (Uncorrected)": "TOTAL_04_zmap_uncorrected.png",
-                "04 - Z-Map (FDR Corrected)": "TOTAL_05_zmap_FDR.png"
-            }
-
-            # Select which PNG to show
-            choice = st.selectbox("Select Diagnostic Map", list(diagnostic_maps.keys()))
-            target_png = total_dir / diagnostic_maps[choice]
-
-            if target_png.exists():
-                # We use st.image because these are static PNG files
-                st.image(str(target_png), use_container_width=True, caption=choice)
+            fdr_png = total_dir / "TOTAL_05_zmap_FDR.png"
+            if fdr_png.exists():
+                st.subheader("Combined Statistical Results")
+                st.image(str(fdr_png), use_container_width=True)
+                st.caption("This map fuses all available data for this subject into one high-confidence result.")
             else:
-                st.error(f"PNG not found: {target_png.name}")
-                st.info(f"Full path tried: {target_png}")
+                st.info("### ⏳ The final summary map is still being generated.")
         else:
-            st.error(f"Folder not found: {total_dir}")
+            st.info("### ⏳ The combined analysis for this contrast is ongoing.")
 
     with tab_runs:
-        st.subheader("Individual Run")
-        # Finds run folders like run-01_dir-ap
-        run_dirs = sorted([d for d in (contrast_path / selected_contrast).iterdir() 
-                          if d.is_dir() and "run-" in d.name])
+        st.subheader("Individual Run Snapshots")
+        st.write("Examine these to see how consistent the brain activity was during each part of the session.")
+        
+        run_path = method_path / selected_contrast
+        run_dirs = sorted([d for d in run_path.iterdir() if d.is_dir() and "run-" in d.name])
         
         if run_dirs:
             cols = st.columns(2)
             for i, run_p in enumerate(run_dirs):
-                # Your script saves: {c_name}_run_viz.png
                 run_png = run_p / f"{selected_contrast}_run_viz.png"
-                
                 with cols[i % 2]:
                     if run_png.exists():
-                        st.image(str(run_png), caption=f"QC: {run_p.name}")
+                        st.image(str(run_png), caption=f"Session: {run_p.name}", use_container_width=True)
                     else:
-                        st.caption(f"No PNG found for {run_p.name}")
+                        st.caption(f"🕒 Run {run_p.name} visualization is ongoing.")
         else:
-            st.info("No run directories found.")
+            st.info("### ⏳ Individual run visualizations are ongoing.")

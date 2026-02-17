@@ -1,4 +1,16 @@
 data/*
 results_glm_3methods/*
 results_industrial/*
+
+# 1. Block the folder by default
 results_V01/*
+
+# 2. But allow the subdirectories so Git can "walk" through them
+!results_V01/**/
+
+# 3. Specifically allow PNG files
+!results_V01/**/*.png
+
+# 4. Strictly block the NIfTI data files
+*.nii.gz
+*.nii

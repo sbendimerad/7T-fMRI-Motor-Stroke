@@ -9,22 +9,21 @@ st.set_page_config(page_title="Motif-Stroke | 7T fMRI", layout="wide")
 
 # --- SIDEBAR ---
 st.sidebar.title("🧠 Motif-Stroke")
-page = st.sidebar.radio("Navigation", ["Welcome Home", "Analysis Dashboard"])
+page = st.sidebar.radio("Navigation", ["Home", "Analysis Dashboard"])
 
 # --- PAGE 1: WELCOME HOME ---
-if page == "Welcome Home":
-    st.title("🏥 Motif-Stroke: 7T Motor Mapping Explorer")
+if page == "Welcome":
+    st.title("🏥 Motif-Stroke: 7T Data Analysis Explorer")
     
     st.markdown("""
     ### Welcome! 👋
-    This application allows to explore the high-resolution functional brain maps generated for the **Motif-Stroke** project. 
+    This application allows to explore the results generated for the **Motif-Stroke** project. 
     
-    The platform provides access to the statistical analyses performed on the fMRI data of the subjects and patients of the project.
+    The platform provides access to the statistical analyses performed on the fMRI data of the subjects and patients.
     """)
 
     st.info("""
-    **🏗 Project Status:** This study is currently active. We are constantly updating the subjects 
-    and refining our analysis methods. If you don't see a specific result yet, it's likely still being processed!
+    **🏗 Project Status:** If you don't see a specific result yet, it's likely still being processed!
     """)
 
     st.divider()

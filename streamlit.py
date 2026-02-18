@@ -9,7 +9,7 @@ st.set_page_config(page_title="Motif-Stroke | 7T fMRI", layout="wide")
 
 # --- SIDEBAR ---
 st.sidebar.title("🧠 Motif-Stroke")
-page = st.sidebar.radio("Navigation", ["Home", "Analysis Dashboard"])
+page = st.sidebar.radio("Navigation", ["Welcome", "Analysis Dashboard"])
 
 # --- PAGE 1: WELCOME HOME ---
 if page == "Welcome":

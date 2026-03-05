@@ -75,9 +75,9 @@ else:
     with guide_col2:
         st.subheader("📊 What does this map show?")
         st.markdown("""
-        We use an **FDR threshold (0.05)**. In simple terms: there is a **95% confidence** that the displayed activations represent true neural 
+        We use an **FDR threshold (0.01)**. In simple terms: there is a **99% confidence** that the displayed activations represent true neural 
         responses..
-        The maps represent Z-scores thresholded using **False Discovery Rate (FDR)** at $q < 0.05$. 
+        The maps represent Z-scores thresholded using **False Discovery Rate (FDR)** at $q < 0.01$. 
 
         """)
     

@@ -44,11 +44,11 @@ TASK_METADATA = {
                 "decode": "🔴 RED indicates Joystick movement; 🔵 BLUE indicates resting baseline."
             },
             "right_vs_left": {
-                "phrase": "Compares moving Right vs. moving Left. Because the brain is 'crossed', look for activity on the Left side of the brain.",
+                "phrase": "Compares moving Right vs. moving Left.",
                 "decode": "🔴 RED = Aiming Right; 🔵 BLUE = Aiming Left."
             },
             "left_vs_right": {
-                "phrase": "Compares moving Left vs. moving Right. Because the brain is 'crossed', look for activity on the Right side of the brain.",
+                "phrase": "Compares moving Left vs. moving Right.",
                 "decode": "🔴 RED = Aiming Left; 🔵 BLUE = Aiming Right."
             },
             "target_achieved": {
@@ -194,11 +194,26 @@ else:
             if bonf_png: st.image(str(bonf_png), use_container_width=True)
 
     with tab_runs:
+        st.subheader("🔎 Individual Run Snapshots (Overview Only)")
+        st.write("Displaying the global overview for each run to check for motion or quality issues.")
+        
         run_path = method_path / selected_contrast
         run_dirs = sorted([d for d in run_path.iterdir() if d.is_dir() and "run-" in d.name])
+        
         if run_dirs:
             cols = st.columns(2)
             for i, run_p in enumerate(run_dirs):
-                run_png = next(run_p.glob(f"*{selected_view}*.png"), None)
+                # 1. Get the run ID from the folder name
+                run_id = run_p.name.split("run-")[-1].split("_")[0]
+                
+                # 2. FORCE the view to 'overview' regardless of the radio selection
+                target_filename = f"{selected_contrast}_run-{run_id}_overview_viz.png"
+                run_png = run_p / target_filename
+                
                 with cols[i % 2]:
-                    if run_png: st.image(str(run_png), caption=f"Run Snapshot", use_container_width=True)
+                    if run_png.exists():
+                        st.image(str(run_png), caption=f"Run {run_id} Overview", use_container_width=True)
+                    else:
+                        st.caption(f"⚠️ Overview not found for Run {run_id}")
+        else:
+            st.info("No individual run folders found.")

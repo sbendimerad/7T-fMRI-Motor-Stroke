@@ -10,172 +10,181 @@ st.set_page_config(
 )
 
 # ─── PATHS ────────────────────────────────────────────────────────────────────
-BASE = Path(__file__).parent
+BASE          = Path(__file__).parent
 MOTIF_DIRS    = [BASE / "results_motif4limbs_V01"]
 JOYSTICK_DIRS = [BASE / "results_joystick_V01"]
-EXCLUDED_CONTRASTS = {"foot_vs_hand", "hand_vs_foot"}
 
-# ─── SCIENTIFIC METADATA ──────────────────────────────────────────────────────
+# ─── CONTRAST METADATA ────────────────────────────────────────────────────────
+# Covers every contrast folder that exists (or will exist) on disk.
 CONTRAST_INFO = {
-    # ── Shared ──
+
+    # ── Shared (both tasks) ───────────────────────────────────────────────────
     "task_gt_baseline": {
-        "label": "Task > Baseline",
-        "phrase": "Global engagement of the motor strip compared to resting baseline. This is the foundational contrast — it maps every region that is more active during the task than at rest.",
-        "decode": "🔴 **Red** = Active during task &nbsp;|&nbsp; 🔵 **Blue** = More active at rest",
+        "label":  "Task > Baseline",
+        "phrase": "Global engagement of the motor network compared to rest. "
+                  "Maps every region more active during the task than at baseline. "
+                  "This is the foundational contrast — always the starting point.",
+        "decode": "🔴 Red = Active during task &nbsp;|&nbsp; 🔵 Blue = More active at rest",
     },
     "right_vs_left": {
-        "label": "Right > Left  (all limbs)",
-        "phrase": "Compares right-side vs left-side motor activity across all limbs. Tests hemispheric lateralization: the left hemisphere should dominate for right-side movements.",
-        "decode": "🔴 **Red** = Right limbs / Left hemisphere dominant &nbsp;|&nbsp; 🔵 **Blue** = Left limbs / Right hemisphere dominant",
+        "label":  "Right > Left  (all limbs)",
+        "phrase": "Hemispheric lateralization across all limbs: right-side movements "
+                  "versus left-side movements. The left hemisphere should dominate "
+                  "for right-side movements in healthy subjects.",
+        "decode": "🔴 Red = Right limbs dominant &nbsp;|&nbsp; 🔵 Blue = Left limbs dominant",
     },
-    # ── Motif4Limbs ──
+
+    # ── Motif4Limbs ───────────────────────────────────────────────────────────
+    "hand_vs_foot": {
+        "label":  "Hand > Foot",
+        "phrase": "Primary motor cortex hand area (lateral M1, hand-knob) versus "
+                  "foot area (medial M1, paracentral lobule). Tests the somatotopic "
+                  "gradient along the motor strip.",
+        "decode": "🔴 Red = Hand representation &nbsp;|&nbsp; 🔵 Blue = Foot representation",
+    },
+    "foot_vs_hand": {
+        "label":  "Foot > Hand",
+        "phrase": "Inverse of hand_vs_foot. Highlights the medial motor wall "
+                  "(paracentral lobule) and SMA where foot movements are represented.",
+        "decode": "🔴 Red = Foot representation &nbsp;|&nbsp; 🔵 Blue = Hand representation",
+    },
     "right_vs_left_hand": {
-        "label": "Right Hand > Left Hand",
-        "phrase": "Fine-grained lateralization of hand representations in primary motor cortex (hand-knob area). Isolates the hand region only.",
-        "decode": "🔴 **Red** = Right hand &nbsp;|&nbsp; 🔵 **Blue** = Left hand",
+        "label":  "Right Hand > Left Hand",
+        "phrase": "Fine-grained lateralization of hand representations in primary "
+                  "motor cortex. Isolates the hand-knob area only — contralateral "
+                  "left M1 should dominate for right-hand movements.",
+        "decode": "🔴 Red = Right hand (left M1) &nbsp;|&nbsp; 🔵 Blue = Left hand (right M1)",
     },
     "right_vs_left_foot": {
-        "label": "Right Foot > Left Foot",
-        "phrase": "Lateralization of foot representations in the medial motor wall (paracentral lobule). Isolates the foot region only.",
-        "decode": "🔴 **Red** = Right foot &nbsp;|&nbsp; 🔵 **Blue** = Left foot",
+        "label":  "Right Foot > Left Foot",
+        "phrase": "Lateralization of foot representations in the medial motor wall "
+                  "(paracentral lobule). Contralateral hemisphere should dominate.",
+        "decode": "🔴 Red = Right foot &nbsp;|&nbsp; 🔵 Blue = Left foot",
     },
-    "global_right_vs_left": {
-        "label": "Global Right > Left  (all four limbs)",
-        "phrase": "Hemispheric dominance pooled across all four limbs simultaneously. Provides a broad view of motor lateralization.",
-        "decode": "🔴 **Red** = Right-side movements / Left hemisphere &nbsp;|&nbsp; 🔵 **Blue** = Left-side movements / Right hemisphere",
-    },
-    # ── Joystick — Events Method ──
-    "left_vs_right": {
-        "label": "Left > Right  (joystick direction)",
-        "phrase": "Compares leftward joystick pushes to rightward pushes. Involves contralateral motor and parietal regions.",
-        "decode": "🔴 **Red** = Aiming Left &nbsp;|&nbsp; 🔵 **Blue** = Aiming Right",
-        "joystick_method": "events",
+
+    # ── Joystick — Events Method ──────────────────────────────────────────────
+    "push_right_vs_left": {
+        "label":  "Push Right > Push Left",
+        "phrase": "Directional specificity: rightward pushes (effort + success) "
+                  "versus leftward pushes. Contralateral M1 and parietal regions "
+                  "encode the direction of the movement.",
+        "decode": "🔴 Red = Rightward push (left M1 / left IPS) &nbsp;|&nbsp; 🔵 Blue = Leftward push",
     },
     "active_effort_vs_passive": {
-        "label": "Active Effort > Passive",
-        "phrase": "Active volitional motor effort versus passive joystick displacement. Isolates top-down motor drive from sensory feedback.",
-        "decode": "🔴 **Red** = Active volitional push &nbsp;|&nbsp; 🔵 **Blue** = Passive movement",
-        "joystick_method": "events",
-    },
-    "push_right_vs_left": {
-        "label": "Push Right > Push Left",
-        "phrase": "Directional specificity: rightward versus leftward pushes. Engages contralateral M1 and parietal areas.",
-        "decode": "🔴 **Red** = Pushing Right &nbsp;|&nbsp; 🔵 **Blue** = Pushing Left",
-        "joystick_method": "events",
+        "label":  "Active Effort > Passive Return",
+        "phrase": "Volitional outward push toward the target versus passive return "
+                  "to rest position. Isolates top-down motor drive and voluntary "
+                  "effort from sensory-guided return.",
+        "decode": "🔴 Red = Active push phase &nbsp;|&nbsp; 🔵 Blue = Passive return",
     },
     "goal_attained_feedback": {
-        "label": "Goal Attained (Feedback)",
-        "phrase": "Event-related BOLD response time-locked to the moment the joystick cursor reaches the target. Captures reward/stop processing.",
-        "decode": "🔴 **Red** = Goal achieved (reward signal) &nbsp;|&nbsp; 🔵 **Blue** = In-motion (execution phase)",
-        "joystick_method": "events",
+        "label":  "Goal Attained (Feedback)",
+        "phrase": "BOLD response time-locked to the moment the joystick cursor "
+                  "reaches the target. Captures the reward/success signal and "
+                  "stop-movement processing (visual cortex V5, SMA, striatum).",
+        "decode": "🔴 Red = Success / goal moment &nbsp;|&nbsp; 🔵 Blue = Ongoing effort phase",
     },
-    "return_gt_move": {
-        "label": "Return > Move",
-        "phrase": "Inhibitory motor control: the neural cost of stopping and returning to center versus continuing to push outward.",
-        "decode": "🔴 **Red** = Re-centering / the stop &nbsp;|&nbsp; 🔵 **Blue** = Outward push / the go",
-        "joystick_method": "events",
+
+    # ── Joystick — Motion Method ──────────────────────────────────────────────
+    "amplitude_modulation": {
+        "label":  "Amplitude Modulation (parametric)",
+        "phrase": "Parametric contrast: regions where BOLD signal scales "
+                  "proportionally with the peak joystick displacement across "
+                  "all movement phases. Identifies areas encoding movement effort "
+                  "and kinematics — typically M1, SMA, and cerebellum.",
+        "decode": "🔴 Red = BOLD increases with greater amplitude &nbsp;|&nbsp; 🔵 Blue = Inversely related",
     },
-    # ── Joystick — Motions Method ──
-    "speed_gt_baseline": {
-        "label": "Speed > Baseline",
-        "phrase": "Parametric modulation by cursor speed: regions whose BOLD signal scales with how fast the joystick is moved.",
-        "decode": "🔴 **Red** = Higher speed correlates with more activation &nbsp;|&nbsp; 🔵 **Blue** = Inversely related to speed",
-        "joystick_method": "motions",
+    "amplitude_right_vs_left": {
+        "label":  "Amplitude Right > Left (parametric)",
+        "phrase": "Does amplitude tracking lateralize by direction? Compares the "
+                  "parametric amplitude effect for rightward pushes versus leftward "
+                  "pushes. Tests whether effort encoding is direction-specific.",
+        "decode": "🔴 Red = Rightward amplitude stronger &nbsp;|&nbsp; 🔵 Blue = Leftward amplitude stronger",
     },
-    "displacement_gt_baseline": {
-        "label": "Displacement > Baseline",
-        "phrase": "Parametric modulation by joystick displacement amplitude: regions encoding how far the cursor travels.",
-        "decode": "🔴 **Red** = Greater displacement = more activation &nbsp;|&nbsp; 🔵 **Blue** = Inversely related to amplitude",
-        "joystick_method": "motions",
-    },
-    "direction_right_gt_left": {
-        "label": "Direction Right > Left (continuous)",
-        "phrase": "Continuous directional regressor: regions encoding rightward vs leftward movement angle in a parametric model.",
-        "decode": "🔴 **Red** = Rightward direction preference &nbsp;|&nbsp; 🔵 **Blue** = Leftward direction preference",
-        "joystick_method": "motions",
-    },
-    "velocity_x_gt_baseline": {
-        "label": "Velocity X (horizontal)",
-        "phrase": "Parametric regressor tracking the horizontal velocity component of the joystick cursor.",
-        "decode": "🔴 **Red** = Rightward velocity &nbsp;|&nbsp; 🔵 **Blue** = Leftward velocity",
-        "joystick_method": "motions",
+    "amplitude_active_vs_passive": {
+        "label":  "Amplitude Active > Passive (parametric)",
+        "phrase": "Is the parametric amplitude effect stronger during active outward "
+                  "pushes than during passive return to center? Tests whether effort "
+                  "encoding in M1/cerebellum is specific to volitional movement.",
+        "decode": "🔴 Red = Push amplitude tracked more &nbsp;|&nbsp; 🔵 Blue = Return amplitude tracked more",
     },
 }
 
+# ─── METHOD METADATA ──────────────────────────────────────────────────────────
 METHOD_INFO = {
-    # Joystick methods — maps folder name fragments → display info
-    "events":   {
+    "events": {
         "label": "Events Method",
-        "icon": "📅",
-        "desc": (
-            "The GLM is built from **discrete task events**: push onset, target reached, "
-            "return onset. Each event is modelled as an impulse convolved with the HRF. "
-            "This captures *what happens* at each phase of the trial."
+        "icon":  "📅",
+        "desc":  (
+            "The GLM models **discrete task phases** from the events.tsv file: "
+            "push onset (`left`/`right`), target reached (`*_reached`), and return "
+            "to rest (`center`/`center_reached`). Each phase is convolved with the HRF. "
+            "**Modulation = 1.0 for all trials** — this method asks *where is the brain active?*"
         ),
     },
-    "motions":  {
-        "label": "Motions Method",
-        "icon": "📈",
-        "desc": (
-            "The GLM uses **continuous kinematic regressors** derived from the joystick "
-            "sensor (speed, displacement, velocity X/Y). This captures *how* the movement "
-            "is executed and which regions encode movement quality."
+    "motion": {
+        "label": "Motion Method",
+        "icon":  "📈",
+        "desc":  (
+            "A **parametric GLM**: same trial timing as the events method, but each "
+            "trial is weighted by the **peak Euclidean joystick displacement** recorded "
+            "during that trial. This method asks *where does BOLD scale proportionally "
+            "with how hard the subject pushed?* Typical activations: M1, cerebellum, putamen."
         ),
     },
-    # Motif4Limbs methods
+    "sequence": {
+        "label": "Sequence Method",
+        "icon":  "🔢",
+        "desc":  (
+            "The GLM is built by reconstructing trial onsets from the **fixed stimulus "
+            "sequence CSV** (block order + timing constants). Each limb movement is "
+            "modelled as a 2.2 s boxcar convolved with the HRF."
+        ),
+    },
     "behavioral": {
         "label": "Behavioral Method",
-        "icon": "🧪",
-        "desc": "GLM built from the task timing file (button-press / cue onsets). Standard event-based approach.",
-    },
-    "sequence":   {
-        "label": "Sequence Method",
-        "icon": "🔢",
-        "desc": "GLM exploiting the fixed motif order of limb movements as a sequence-level regressor.",
+        "icon":  "🧪",
+        "desc":  (
+            "The GLM is built from the **raw behavioral log file**: keypresses anchored "
+            "to the TTL scanner trigger pulse. Each keypress is modelled as a 0.5 s "
+            "event. This method uses actual response times rather than the nominal sequence."
+        ),
     },
 }
 
-def method_display(folder_name: str) -> str:
-    """Return a pretty label for a method folder name."""
-    fl = folder_name.lower()
-    for key, info in METHOD_INFO.items():
-        if key in fl:
-            return f"{info['icon']} {info['label']}"
-    return folder_name.replace("_", " ").title()
-
-def method_description(folder_name: str) -> str | None:
-    fl = folder_name.lower()
-    for key, info in METHOD_INFO.items():
-        if key in fl:
-            return info["desc"]
-    return None
-
+# ─── ROI METADATA ─────────────────────────────────────────────────────────────
 ROI_INFO = {
-    "overview":      ("Overview",               "Global whole-brain distribution across the motor strip. Best starting point to identify which regions are active."),
-    "SMA":           ("SMA — Supplementary Motor Area", "Medial premotor region crucial for motor planning and sequencing. Active in both tasks. Often the first region to recruit."),
-    "M1_hand_L":     ("M1 Left — Hand Knob",    "Primary motor cortex for the right hand. Located on the lateral convexity of the left hemisphere."),
-    "M1_hand_R":     ("M1 Right — Hand Knob",   "Primary motor cortex for the left hand. Mirror of M1_hand_L in the right hemisphere."),
-    "M1_foot_medial":("M1 — Foot (Medial Wall)","Medial motor strip for lower-limb representation in the paracentral lobule."),
-    "IPS_L":         ("Left IPS — Parietal GPS", "Left intraparietal sulcus: integrates visual and motor signals for rightward spatial targets."),
-    "IPS_R":         ("Right IPS — Parietal GPS","Right intraparietal sulcus: integrates visual and motor signals for leftward spatial targets."),
-    "Visual_V5":     ("Visual V5 / MT+",         "Motion-processing cortex tracking the joystick cursor on screen. Strong in joystick directional contrasts."),
-    "AUTO_PEAK":     ("Auto-Peak (subject hotspot)", "Centered automatically on the single strongest activation voxel for this individual subject."),
+    "overview":       ("Overview",                    "Whole-brain ortho view centred on the motor strip. Best starting point."),
+    "SMA":            ("SMA — Supplementary Motor Area", "Medial premotor region for motor planning and sequencing. Active in all motor tasks."),
+    "M1_hand_L":      ("Left M1 — Hand Knob",         "Primary motor cortex for the right hand (contralateral). Lateral convexity of left hemisphere."),
+    "M1_hand_R":      ("Right M1 — Hand Knob",        "Primary motor cortex for the left hand (contralateral). Mirror of M1_hand_L."),
+    "M1_foot_medial": ("M1 — Foot (Medial Wall)",     "Medial motor strip for lower-limb representation, paracentral lobule."),
+    "IPS_L":          ("Left IPS — Parietal",         "Left intraparietal sulcus: visuomotor integration for rightward targets."),
+    "Visual_V5":      ("Visual V5 / MT+",             "Motion-sensitive visual cortex tracking the joystick cursor on screen."),
+    "Cerebellum":     ("Cerebellum",                  "Coordinates movement timing and amplitude. Key region in parametric motion contrasts."),
 }
 
 # ─── HELPERS ──────────────────────────────────────────────────────────────────
+def method_display(folder_name: str) -> str:
+    info = METHOD_INFO.get(folder_name.lower())
+    if info:
+        return f"{info['icon']} {info['label']}"
+    return folder_name.replace("_", " ").title()
+
+def method_description(folder_name: str) -> str | None:
+    info = METHOD_INFO.get(folder_name.lower())
+    return info["desc"] if info else None
+
 def extract_view(filename: str) -> str | None:
-    """Extract ROI/view name from a PNG filename — handles both V01 and V02 naming."""
     stem = Path(filename).stem
     for marker in ("_FDR_", "_BONF_"):
         if marker in stem:
             after = stem.split(marker)[-1]
-            # Strip threshold prefix: q0.001_, a0.05_, q0.05_, a0.2_, …
             view = re.sub(r"^[qa][\d.]+_", "", after)
             return view
     return None
 
 def get_views(combined_dir: Path) -> list[str]:
-    """Return sorted unique view names available in a combined_total directory."""
     views = set()
     for png in combined_dir.glob("*.png"):
         v = extract_view(png.name)
@@ -184,7 +193,6 @@ def get_views(combined_dir: Path) -> list[str]:
     return sorted(views)
 
 def find_img(directory: Path, *keywords) -> Path | None:
-    """Return first PNG whose name contains ALL keywords (case-insensitive)."""
     for png in sorted(directory.glob("*.png")):
         name = png.name.lower()
         if all(k.lower() in name for k in keywords):
@@ -192,24 +200,22 @@ def find_img(directory: Path, *keywords) -> Path | None:
     return None
 
 def roi_label(view: str) -> str:
-    """Pretty display label for a view name."""
     if view in ROI_INFO:
         return ROI_INFO[view][0]
-    if view.lower().startswith("peak_") or view.lower() == "auto_peak":
-        return "Auto-Peak (hotspot)"
+    if view.lower().startswith("peak_"):
+        coords = view.replace("peak_", "").replace("_", ", ")
+        return f"Peak ({coords})"
     return view.replace("_", " ")
 
 def roi_description(view: str) -> str:
-    """Scientific description for a view name."""
     if view in ROI_INFO:
         return ROI_INFO[view][1]
     if view.lower().startswith("peak_"):
         coords = view.replace("peak_", "").replace("_", ", ")
-        return f"Auto-peak view centered on the global maximum activation at MNI coordinates ({coords})."
-    return "Brain region of interest."
+        return f"Auto-peak: centered on the strongest activation voxel at MNI ({coords})."
+    return ""
 
 def get_subjects(dirs: list[Path]) -> dict[str, Path]:
-    """Collect {{display_name: path}} for all sub-* folders across given directories."""
     raw: dict[str, list[Path]] = {}
     for base in dirs:
         if not base.exists():
@@ -227,20 +233,19 @@ def get_subjects(dirs: list[Path]) -> dict[str, Path]:
     return result
 
 def show_image_or_missing(img_path: Path | None, caption: str = ""):
-    """Display an image if it exists, otherwise show a compact placeholder."""
     if img_path and img_path.exists():
         st.image(str(img_path), caption=caption, use_container_width=True)
     else:
         st.markdown(
             "<div style='border:1px dashed #888;border-radius:6px;padding:20px;"
             "text-align:center;color:#888;font-size:0.85em;'>"
-            "🚧 Not yet available</div>",
+            "🚧 Not yet computed</div>",
             unsafe_allow_html=True,
         )
         if caption:
             st.caption(caption)
 
-# ─── SIDEBAR NAVIGATION ──────────────────────────────────────────────────────
+# ─── SIDEBAR ──────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.title("🧠 Motif-Stroke 7T")
     st.markdown("---")
@@ -255,185 +260,116 @@ with st.sidebar:
 # ═══════════════════════════════════════════════════════════════════════════════
 if page == "🏠  Overview":
 
-    st.title("🧠 Motif-Stroke — 7T fMRI Analysis Explorer")
-    st.markdown(
-        "Welcome to the **Motif-Stroke** analysis platform. This tool lets you explore "
-        "high-resolution statistical brain maps generated from **7 Tesla fMRI** data "
-        "in patients recovering from stroke."
-    )
-    st.info(
-        "**🏗 Pipeline Status:** If a map is missing for a subject or contrast, it is "
-        "still being processed — the dashboard will show a placeholder automatically.",
-        icon="ℹ️",
-    )
+    import pandas as pd
 
+    st.title("🧠 Motif-Stroke — 7T fMRI Explorer")
+    st.markdown(
+        "First-level GLM results from two motor tasks acquired at 7 Tesla in stroke patients. "
+        "Each page displays thresholded Z-score maps (FDR and Bonferroni) for a given subject, "
+        "method, and contrast. Select a task in the sidebar to begin."
+    )
     st.markdown("---")
 
-    # ── SECTION 1: The two tasks ───────────────────────────────────────────────
-    st.header("📋 The Two Tasks")
-
+    # ── Tasks ──────────────────────────────────────────────────────────────────
+    st.header("Tasks")
     col_m, col_j = st.columns(2, gap="large")
-
     with col_m:
-        st.subheader("🦵 Task 1 — Motif4Limbs")
+        st.markdown("##### 🦵 Motif4Limbs")
         st.markdown(
-            "A **somatotopic mapping** paradigm. The participant performs sequential "
-            "movements of all four limbs (right hand, left hand, right foot, left foot) "
-            "in a fixed order ('motif'). \n\n"
-            "**Goal:** Map the body representation in primary motor cortex (M1) and "
-            "supplementary motor area (SMA) at ultra-high field resolution, and quantify "
-            "any reorganisation due to stroke."
+            "Block-design somatotopic mapping. The subject performs sequential movements "
+            "of each limb (right hand → left hand → right foot → left foot) in a fixed motif. "
+            "Goal: characterise the somatotopic organisation of primary motor cortex "
+            "and SMA, and detect post-stroke reorganisation."
         )
-
     with col_j:
-        st.subheader("🕹️ Task 2 — Joystick")
+        st.markdown("##### 🕹️ Joystick")
         st.markdown(
-            "A **visually-guided joystick** task. The participant pushes a joystick "
-            "to move a cursor toward a spatial target, holds it, then returns to centre. "
-            "\n\n"
-            "**Goal:** Probe the dorsal visuomotor stream (M1, SMA, IPS, V5) and "
-            "measure directional specificity, effort, and feedback processing during "
-            "goal-directed reaching.\n\n"
-            "This task is analysed with **two complementary GLM approaches:**"
-        )
-        st.markdown(
-            "- 📅 **Events Method** — discrete trial phases (push / target hit / return) "
-            "modelled as HRF-convolved impulses\n"
-            "- 📈 **Motions Method** — continuous kinematic regressors (speed, displacement, "
-            "velocity X/Y) derived from the joystick sensor"
+            "Visually-guided reaching task. The subject deflects a joystick to move a cursor "
+            "toward left or right targets on screen, holds on reaching, then returns to centre. "
+            "Goal: characterise goal-directed motor control, directional lateralisation, "
+            "and effort-related BOLD responses."
         )
 
     st.markdown("---")
 
-    # ── SECTION 2: Contrasts explained ────────────────────────────────────────
-    st.header("🎯 Contrasts — What Each Comparison Tests")
-
-    with st.expander("🦵  Motif4Limbs contrasts", expanded=True):
-        motif_contrasts = [
-            "task_gt_baseline", "right_vs_left", "right_vs_left_hand",
-            "right_vs_left_foot", "global_right_vs_left",
-        ]
-        for key in motif_contrasts:
-            info = CONTRAST_INFO[key]
-            st.markdown(f"**{info['label']}**")
-            st.markdown(f"&nbsp;&nbsp;&nbsp;{info['phrase']}")
-            st.caption(f"&nbsp;&nbsp;&nbsp;{info['decode']}")
-            st.markdown("")
-
-    with st.expander("🕹️  Joystick contrasts", expanded=True):
-        # ── Events Method contrasts ──
-        st.markdown("##### 📅 Events Method")
-        st.caption("Contrasts derived from discrete task phases (push / target hit / return to centre)")
-        events_contrasts = [
-            "task_gt_baseline", "right_vs_left", "left_vs_right",
-            "return_gt_move", "active_effort_vs_passive",
-            "push_right_vs_left", "goal_attained_feedback",
-        ]
-        seen = set()
-        for key in events_contrasts:
-            if key in CONTRAST_INFO and key not in seen:
-                seen.add(key)
-                info = CONTRAST_INFO[key]
-                st.markdown(f"**{info['label']}**")
-                st.markdown(f"&nbsp;&nbsp;&nbsp;{info['phrase']}")
-                st.caption(f"&nbsp;&nbsp;&nbsp;{info['decode']}")
-                st.markdown("")
-
-        st.markdown("---")
-
-        # ── Motions Method contrasts ──
-        st.markdown("##### 📈 Motions Method")
-        st.caption("Contrasts derived from continuous kinematic regressors (speed, displacement, velocity)")
-        motions_contrasts = [
-            "speed_gt_baseline", "displacement_gt_baseline",
-            "direction_right_gt_left", "velocity_x_gt_baseline",
-        ]
-        for key in motions_contrasts:
-            if key in CONTRAST_INFO:
-                info = CONTRAST_INFO[key]
-                st.markdown(f"**{info['label']}**")
-                st.markdown(f"&nbsp;&nbsp;&nbsp;{info['phrase']}")
-                st.caption(f"&nbsp;&nbsp;&nbsp;{info['decode']}")
-                st.markdown("")
-        st.caption("🏗 Motions Method results are being processed — maps will appear automatically when ready.")
+    # ── Methods ────────────────────────────────────────────────────────────────
+    st.header("Analysis Methods")
+    methods_table = pd.DataFrame([
+        ["🦵 Motif4Limbs", "🔢 Sequence",   "GLM regressors derived from the fixed stimulus sequence (known block order + TR-locked timing). Modulation = 1."],
+        ["🦵 Motif4Limbs", "🧪 Behavioral", "GLM regressors derived from logged keypress times, anchored to the TTL trigger. Captures actual response latencies."],
+        ["🕹️ Joystick",    "📅 Events",     "Each trial phase (push, reached, return) modelled as a boxcar with constant amplitude (modulation = 1). Tests where BOLD is phase-specific."],
+        ["🕹️ Joystick",    "📈 Motion",     "Parametric GLM: same trial timing as Events, but amplitude = peak Euclidean joystick displacement. Tests where BOLD scales with movement magnitude."],
+    ], columns=["Task", "Method", "Description"])
+    st.table(methods_table)
 
     st.markdown("---")
 
-    # ── SECTION 3: Statistical thresholds ─────────────────────────────────────
-    st.header("📊 The Two Statistical Thresholds")
+    # ── Contrasts ──────────────────────────────────────────────────────────────
+    st.header("Contrasts")
 
-    th1, th2 = st.columns(2, gap="large")
+    with st.expander("🦵 Motif4Limbs", expanded=False):
+        st.table(pd.DataFrame([
+            ["task_gt_baseline",   "0.25×(LH+RH+LF+RF)",        "Any limb movement drives greater BOLD than rest",                        "overview · SMA · M1_hand_L · M1_hand_R · M1_foot_medial"],
+            ["hand_vs_foot",       "0.5×(LH+RH) − 0.5×(LF+RF)", "Hand movements drive greater BOLD than foot movements",                  "M1_hand_L · M1_hand_R · SMA"],
+            ["foot_vs_hand",       "0.5×(LF+RF) − 0.5×(LH+RH)", "Foot movements drive greater BOLD than hand movements",                  "M1_foot_medial · SMA"],
+            ["right_vs_left",      "0.5×(RH+RF) − 0.5×(LH+LF)", "Right-side limb movements drive greater BOLD than left-side",           "M1_hand_L · M1_hand_R · SMA"],
+            ["right_vs_left_hand", "RH − LH",                    "Right-hand movements drive greater BOLD than left-hand movements",       "M1_hand_L · M1_hand_R"],
+            ["right_vs_left_foot", "RF − LF",                    "Right-foot movements drive greater BOLD than left-foot movements",       "M1_foot_medial · SMA"],
+        ], columns=["Contrast", "Formula", "Interpretation", "Where to look"]))
 
-    with th1:
-        st.subheader("FDR — False Discovery Rate")
-        st.markdown(
-            "Controls the **expected proportion of false positives** across all "
-            "voxels tested simultaneously. \n\n"
-            "- More **sensitive** (liberal): shows the extended functional network\n"
-            "- Typical setting: *q < 0.05* or *q < 0.001*\n"
-            "- Good for: exploring which regions participate\n\n"
-            "> _Use FDR to see the full picture._"
-        )
+    with st.expander("🕹️ Joystick — Events", expanded=False):
+        st.table(pd.DataFrame([
+            ["task_gt_baseline",         "L + Lr + R + Rr + C + Cr",  "Any task phase drives greater BOLD than rest",                         "overview · SMA · M1_hand_L · Visual_V5"],
+            ["push_right_vs_left",       "(R+Rr) − (L+Lr)",           "Rightward pushes drive greater BOLD than leftward pushes",             "M1_hand_L · IPS_L"],
+            ["active_effort_vs_passive", "0.5×(L+R) − 0.5×(C+Cr)",   "Volitional push toward target drives greater BOLD than passive return","M1_hand_L · SMA"],
+            ["goal_attained_feedback",   "0.5×(Lr+Rr) − 0.5×(L+R)",  "Target acquisition drives greater BOLD than the preceding push phase", "Visual_V5 · SMA"],
+        ], columns=["Contrast", "Formula", "Interpretation", "Where to look"]))
+        st.caption("L=left push, Lr=left reached, R=right push, Rr=right reached, C=center, Cr=center reached")
 
-    with th2:
-        st.subheader("Bonferroni — Family-Wise Error Rate")
-        st.markdown(
-            "Divides the significance level by the number of tests — the most "
-            "**conservative** multiple-comparison correction. \n\n"
-            "- More **specific** (strict): only the absolute core survives\n"
-            "- Typical setting: *α < 0.05* or *α < 0.2* (for 7T high-SNR)\n"
-            "- Good for: confirming the strongest activation epicentres\n\n"
-            "> _Use Bonferroni to trust the peaks._"
-        )
-
-    st.info(
-        "**How to read the dashboards:** Each contrast is shown side-by-side "
-        "with FDR (left) and Bonferroni (right). Regions that survive both are "
-        "the most reliable activations.",
-        icon="💡",
-    )
+    with st.expander("🕹️ Joystick — Motion (parametric)", expanded=False):
+        st.table(pd.DataFrame([
+            ["amplitude_modulation",        "L + R + C",       "BOLD scales proportionally with peak joystick displacement",              "M1_hand_L · SMA · Cerebellum"],
+            ["amplitude_right_vs_left",     "R − L",           "BOLD–amplitude coupling is stronger for rightward than leftward movements","M1_hand_L · M1_hand_R"],
+            ["amplitude_active_vs_passive", "0.5×(L+R) − C",  "BOLD–amplitude coupling is stronger during the push than the return",     "M1_hand_L · SMA · Cerebellum"],
+        ], columns=["Contrast", "Formula", "Interpretation", "Where to look"]))
+        st.caption("Amplitude = peak Euclidean joystick displacement × 100 per trial.")
 
     st.markdown("---")
 
-    # ── SECTION 4: Brain cuts / ROIs ──────────────────────────────────────────
-    st.header("📍 Brain Views — What Each 'Cut' Shows")
-    st.markdown(
-        "In each dashboard you can select different **anatomical views** (brain slices "
-        "centred on specific regions of interest). Here is what each one represents:"
-    )
-
-    roi_cols = st.columns(2)
-    roi_items = list(ROI_INFO.items())
-    for i, (key, (label, desc)) in enumerate(roi_items):
-        with roi_cols[i % 2]:
-            st.markdown(f"**{label}**")
-            st.caption(desc)
-            st.markdown("")
+    # ── Thresholds ─────────────────────────────────────────────────────────────
+    st.header("Statistical Thresholds")
+    st.table(pd.DataFrame([
+        ["FDR",        "Controls expected proportion of false positives among suprathreshold voxels",         "q < 0.05 (joystick) · q < 0.001 (motif4limbs)",  "Sensitive — reveals full extent of activation"],
+        ["Bonferroni", "Controls family-wise error rate: P(any false positive in image) < α",                "α < 0.2 (joystick) · α < 0.05 (motif4limbs)",    "Conservative — confirms focal peaks only"],
+    ], columns=["Method", "Correction principle", "Setting", "Use"]))
+    st.info("Regions surviving both FDR and Bonferroni are the most robust findings.", icon="💡")
 
     st.markdown("---")
 
-    # ── SECTION 5: How to use ─────────────────────────────────────────────────
-    st.header("🚀 How to Use the Dashboards")
-    st.markdown(
-        "1. **Pick a task** using the left sidebar (Motif4Limbs or Joystick)\n"
-        "2. **Select a subject** from the dropdown\n"
-        "3. **Select the GLM method** (behavioral / sequence)\n"
-        "4. **Select a contrast** — a short interpretation is shown automatically\n"
-        "5. **Choose a brain view** to zoom into a specific region\n"
-        "6. Switch between the **Total Summary** tab (combined runs) and "
-        "the **Run-by-Run** tab (quality check per acquisition)"
-    )
+    # ── Brain views ────────────────────────────────────────────────────────────
+    st.header("Brain Views")
+    st.caption("Each map is displayed as three orthogonal slices centred on a predefined MNI coordinate.")
+    st.table(pd.DataFrame([
+        ["overview",        "(0, −20, 60)",   "Mid-motor strip orthoview — starting point for any contrast"],
+        ["SMA",             "(0, −5, 65)",    "Supplementary Motor Area — motor planning, sequencing"],
+        ["M1_hand_L",       "(−38, −22, 56)", "Left primary motor cortex, hand knob — contralateral right-hand control"],
+        ["M1_hand_R",       "(38, −22, 56)",  "Right primary motor cortex, hand knob — contralateral left-hand control"],
+        ["M1_foot_medial",  "(0, −30, 70)",   "Medial motor strip — foot/lower-limb representation"],
+        ["IPS_L",           "(−26, −64, 48)", "Left intraparietal sulcus — visuomotor integration"],
+        ["Visual_V5",       "(45, −75, 5)",   "Area V5/MT+ — motion-sensitive visual cortex, cursor tracking"],
+        ["Cerebellum",      "(18, −52, −18)", "Cerebellum — movement timing and amplitude coordination"],
+        ["peak_X_Y_Z",      "auto",           "Centred on the peak surviving voxel for this subject and contrast"],
+    ], columns=["View", "MNI centre", "Region / interpretation"]))
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# SHARED DASHBOARD LOGIC
+# PAGES 2 & 3 — DASHBOARDS
 # ═══════════════════════════════════════════════════════════════════════════════
 else:
-    is_motif = "Motif" in page
-
-    task_dirs = MOTIF_DIRS if is_motif else JOYSTICK_DIRS
+    is_motif   = "Motif" in page
+    task_dirs  = MOTIF_DIRS if is_motif else JOYSTICK_DIRS
     task_label = "🦵 Motif4Limbs" if is_motif else "🕹️ Joystick"
 
-    # ── Sidebar: Subject ───────────────────────────────────────────────────────
+    # ── Sidebar controls ───────────────────────────────────────────────────────
     with st.sidebar:
         subjects = get_subjects(task_dirs)
         if not subjects:
@@ -443,54 +379,41 @@ else:
         selected_sub_label = st.selectbox("👤 Subject", list(subjects.keys()))
         sub_path = subjects[selected_sub_label]
 
-        # ── Sidebar: Method ────────────────────────────────────────────────────
         methods = [d.name for d in sorted(sub_path.iterdir()) if d.is_dir()]
         if not methods:
-            st.error("No analysis methods found for this subject.")
+            st.error("No analysis methods found.")
             st.stop()
-        selected_method = st.selectbox(
-            "📐 Method",
-            methods,
-            format_func=method_display,
-        )
+        selected_method = st.selectbox("📐 Method", methods, format_func=method_display)
         method_path = sub_path / selected_method
 
-        # ── Sidebar: Contrast ──────────────────────────────────────────────────
-        contrasts = [
-            d.name for d in sorted(method_path.iterdir())
-            if d.is_dir() and d.name not in EXCLUDED_CONTRASTS
-        ]
+        contrasts = [d.name for d in sorted(method_path.iterdir()) if d.is_dir()]
         if not contrasts:
             st.error("No contrasts found.")
             st.stop()
 
-        contrast_display = {
-            c: CONTRAST_INFO.get(c, {}).get("label", c.replace("_", " ").title())
-            for c in contrasts
-        }
         selected_contrast = st.selectbox(
             "🎯 Contrast",
             contrasts,
-            format_func=lambda c: contrast_display[c],
+            format_func=lambda c: CONTRAST_INFO.get(c, {}).get("label", c.replace("_", " ").title()),
         )
 
     contrast_path = method_path / selected_contrast
-    combined_dir   = contrast_path / "combined_total"
+    combined_dir  = contrast_path / "combined_total"
 
-    # ── Header ─────────────────────────────────────────────────────────────────
+    # ── Page header ────────────────────────────────────────────────────────────
     st.title(f"📊 {task_label} Dashboard")
     st.caption(
         f"Subject: **{selected_sub_label}** &nbsp;|&nbsp; "
         f"Method: **{method_display(selected_method)}** &nbsp;|&nbsp; "
-        f"Contrast: **{contrast_display[selected_contrast]}**"
+        f"Contrast: **{CONTRAST_INFO.get(selected_contrast, {}).get('label', selected_contrast)}**"
     )
+
     meth_desc = method_description(selected_method)
     if meth_desc:
-        st.info(meth_desc, icon=METHOD_INFO.get(
-            next((k for k in METHOD_INFO if k in selected_method.lower()), ""), {}
-        ).get("icon", "ℹ️"))
+        icon = METHOD_INFO.get(selected_method.lower(), {}).get("icon", "ℹ️")
+        st.info(meth_desc, icon=icon)
 
-    # ── Contrast interpretation banner ─────────────────────────────────────────
+    # ── Contrast interpretation ────────────────────────────────────────────────
     c_info = CONTRAST_INFO.get(selected_contrast)
     if c_info:
         with st.container(border=True):
@@ -502,23 +425,23 @@ else:
 
     st.markdown("---")
 
-    # ── Statistical thresholds reminder ───────────────────────────────────────
+    # ── Threshold reminder ─────────────────────────────────────────────────────
     with st.expander("🔬 Statistical thresholds — quick reminder", expanded=False):
         tc1, tc2 = st.columns(2)
         with tc1:
-            st.markdown("**FDR (Exploratory)**")
-            st.caption("Sensitive — shows the extended network. Controls the false-discovery proportion.")
+            st.markdown("**FDR** — sensitive, shows the full network")
+            st.caption("Controls the proportion of false positives among significant voxels.")
         with tc2:
-            st.markdown("**Bonferroni (Strict)**")
-            st.caption("Conservative — shows only the strongest epicentres. Divides α by number of voxels.")
+            st.markdown("**Bonferroni** — strict, shows only the strongest peaks")
+            st.caption("Controls the probability of even one false positive in the whole brain.")
 
     st.markdown("---")
 
-    # ── Brain area selector ────────────────────────────────────────────────────
+    # ── Brain view selector ────────────────────────────────────────────────────
     views = get_views(combined_dir) if combined_dir.exists() else []
 
     if not views:
-        st.warning("⏳ No brain maps are available yet for this selection.")
+        st.warning("⏳ No brain maps available yet for this selection.")
         st.stop()
 
     st.subheader("📍 Select Brain View")
@@ -533,48 +456,42 @@ else:
         )
 
     with desc_col:
-        lbl = roi_label(selected_view)
+        st.markdown(f"**{roi_label(selected_view)}**")
         dsc = roi_description(selected_view)
-        st.markdown(f"**{lbl}**")
-        st.markdown(dsc)
+        if dsc:
+            st.markdown(dsc)
 
     st.markdown("---")
 
-    # ── Tabs: Total summary vs Run-by-run ──────────────────────────────────────
+    # ── Tabs ───────────────────────────────────────────────────────────────────
     tab_total, tab_runs = st.tabs(["🎯 Total Summary Map", "🔎 Run-by-Run Consistency"])
 
-    # ── TAB 1: Total summary ───────────────────────────────────────────────────
     with tab_total:
         fdr_img  = find_img(combined_dir, "fdr",  selected_view)
         bonf_img = find_img(combined_dir, "bonf", selected_view)
 
-        img_col1, img_col2 = st.columns(2, gap="medium")
-        with img_col1:
+        col1, col2 = st.columns(2, gap="medium")
+        with col1:
             st.markdown("#### FDR — Exploratory")
             show_image_or_missing(fdr_img, "FDR-corrected")
-        with img_col2:
+        with col2:
             st.markdown("#### Bonferroni — Strict")
             show_image_or_missing(bonf_img, "Bonferroni-corrected")
 
-    # ── TAB 2: Run-by-run ──────────────────────────────────────────────────────
     with tab_runs:
         st.markdown(
-            "Individual run overviews let you check **run-to-run consistency** "
-            "and spot potential motion artefacts or data quality issues."
+            "Individual runs let you check **run-to-run consistency** "
+            "and spot motion artefacts or data quality issues."
         )
-
         run_dirs = sorted(
             [d for d in contrast_path.iterdir() if d.is_dir() and "run" in d.name]
         )
-
         if not run_dirs:
             st.info("No individual run folders found for this contrast.")
         else:
             run_cols = st.columns(min(len(run_dirs), 3), gap="medium")
             for i, run_p in enumerate(run_dirs):
-                run_label = run_p.name
-                # Try to find the selected view first, fall back to overview
                 run_img = find_img(run_p, selected_view) or find_img(run_p, "overview")
                 with run_cols[i % len(run_cols)]:
-                    st.markdown(f"**{run_label}**")
-                    show_image_or_missing(run_img, run_label)
+                    st.markdown(f"**{run_p.name}**")
+                    show_image_or_missing(run_img, run_p.name)

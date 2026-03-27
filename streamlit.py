@@ -63,13 +63,6 @@ CONTRAST_INFO = {
     },
 
     # ── Joystick — Events Method ──────────────────────────────────────────────
-    "push_right_vs_left": {
-        "label":  "Push Right > Push Left",
-        "phrase": "Directional specificity: rightward pushes (effort + success) "
-                  "versus leftward pushes. Contralateral M1 and parietal regions "
-                  "encode the direction of the movement.",
-        "decode": "🔴 Red = Rightward push (left M1 / left IPS) &nbsp;|&nbsp; 🔵 Blue = Leftward push",
-    },
     "active_effort_vs_passive": {
         "label":  "Active Effort > Passive Return",
         "phrase": "Volitional outward push toward the target versus passive return "
@@ -320,7 +313,6 @@ if page == "🏠  Overview":
     with st.expander("🕹️ Joystick — Events", expanded=False):
         st.table(pd.DataFrame([
             ["task_gt_baseline",         "L + Lr + R + Rr + C + Cr",  "Any task phase drives greater BOLD than rest",                         "overview · SMA · M1_hand_L · Visual_V5"],
-            ["push_right_vs_left",       "(R+Rr) − (L+Lr)",           "Rightward pushes drive greater BOLD than leftward pushes",             "M1_hand_L · IPS_L"],
             ["active_effort_vs_passive", "0.5×(L+R) − 0.5×(C+Cr)",   "Volitional push toward target drives greater BOLD than passive return","M1_hand_L · SMA"],
             ["goal_attained_feedback",   "0.5×(Lr+Rr) − 0.5×(L+R)",  "Target acquisition drives greater BOLD than the preceding push phase", "Visual_V5 · SMA"],
         ], columns=["Contrast", "Formula", "Interpretation", "Where to look"]))

@@ -63,19 +63,12 @@ CONTRAST_INFO = {
     },
 
     # ── Joystick — Events Method ──────────────────────────────────────────────
-    "active_effort_vs_passive": {
-        "label":  "Active Effort > Passive Return",
-        "phrase": "Volitional outward push toward the target versus passive return "
-                  "to rest position. Isolates top-down motor drive and voluntary "
-                  "effort from sensory-guided return.",
-        "decode": "🔴 Red = Active push phase &nbsp;|&nbsp; 🔵 Blue = Passive return",
-    },
-    "goal_attained_feedback": {
-        "label":  "Goal Attained (Feedback)",
-        "phrase": "BOLD response time-locked to the moment the joystick cursor "
-                  "reaches the target. Captures the reward/success signal and "
-                  "stop-movement processing (visual cortex V5, SMA, striatum).",
-        "decode": "🔴 Red = Success / goal moment &nbsp;|&nbsp; 🔵 Blue = Ongoing effort phase",
+    "push_right_vs_left": {
+        "label":  "Push Right > Left",
+        "phrase": "Rightward joystick pushes versus leftward pushes. Tests directional "
+                  "lateralisation of motor cortex: contralateral left M1 should dominate "
+                  "for rightward pushes, contralateral right M1 for leftward pushes.",
+        "decode": "🔴 Red = Rightward push (left M1 dominant) &nbsp;|&nbsp; 🔵 Blue = Leftward push (right M1 dominant)",
     },
 
     # ── Joystick — Motion Method ──────────────────────────────────────────────
@@ -94,13 +87,6 @@ CONTRAST_INFO = {
                   "pushes. Tests whether effort encoding is direction-specific.",
         "decode": "🔴 Red = Rightward amplitude stronger &nbsp;|&nbsp; 🔵 Blue = Leftward amplitude stronger",
     },
-    "amplitude_active_vs_passive": {
-        "label":  "Amplitude Active > Passive (parametric)",
-        "phrase": "Is the parametric amplitude effect stronger during active outward "
-                  "pushes than during passive return to center? Tests whether effort "
-                  "encoding in M1/cerebellum is specific to volitional movement.",
-        "decode": "🔴 Red = Push amplitude tracked more &nbsp;|&nbsp; 🔵 Blue = Return amplitude tracked more",
-    },
 }
 
 # ─── METHOD METADATA ──────────────────────────────────────────────────────────
@@ -109,9 +95,9 @@ METHOD_INFO = {
         "label": "Events Method",
         "icon":  "📅",
         "desc":  (
-            "The GLM models **discrete task phases** from the events.tsv file: "
-            "push onset (`left`/`right`), target reached (`*_reached`), and return "
-            "to rest (`center`/`center_reached`). Each phase is convolved with the HRF. "
+            "The GLM models **discrete push phases** from the events.tsv file: "
+            "push onset (`left`/`right`) and return to rest (`center`). "
+            "`*_reached` events are excluded (collinear with push onset, r=0.92). "
             "**Modulation = 1.0 for all trials** — this method asks *where is the brain active?*"
         ),
     },
@@ -312,17 +298,15 @@ if page == "🏠  Overview":
 
     with st.expander("🕹️ Joystick — Events", expanded=False):
         st.table(pd.DataFrame([
-            ["task_gt_baseline",         "L + Lr + R + Rr + C + Cr",  "Any task phase drives greater BOLD than rest",                         "overview · SMA · M1_hand_L · Visual_V5"],
-            ["active_effort_vs_passive", "0.5×(L+R) − 0.5×(C+Cr)",   "Volitional push toward target drives greater BOLD than passive return","M1_hand_L · SMA"],
-            ["goal_attained_feedback",   "0.5×(Lr+Rr) − 0.5×(L+R)",  "Target acquisition drives greater BOLD than the preceding push phase", "Visual_V5 · SMA"],
+            ["task_gt_baseline",   "L + R + C",  "Any push phase drives greater BOLD than rest",       "overview · SMA · M1_hand_L · Visual_V5"],
+            ["push_right_vs_left", "R − L",      "Rightward pushes drive greater BOLD than leftward",  "M1_hand_L · M1_hand_R · overview"],
         ], columns=["Contrast", "Formula", "Interpretation", "Where to look"]))
-        st.caption("L=left push, Lr=left reached, R=right push, Rr=right reached, C=center, Cr=center reached")
+        st.caption("L=left push, R=right push, C=center return. *_reached events excluded (collinear, r=0.92).")
 
     with st.expander("🕹️ Joystick — Motion (parametric)", expanded=False):
         st.table(pd.DataFrame([
-            ["amplitude_modulation",        "L + R + C",       "BOLD scales proportionally with peak joystick displacement",              "M1_hand_L · SMA · Cerebellum"],
-            ["amplitude_right_vs_left",     "R − L",           "BOLD–amplitude coupling is stronger for rightward than leftward movements","M1_hand_L · M1_hand_R"],
-            ["amplitude_active_vs_passive", "0.5×(L+R) − C",  "BOLD–amplitude coupling is stronger during the push than the return",     "M1_hand_L · SMA · Cerebellum"],
+            ["amplitude_modulation",    "L + R + C", "BOLD scales proportionally with peak joystick displacement",               "M1_hand_L · SMA · Cerebellum"],
+            ["amplitude_right_vs_left", "R − L",     "BOLD–amplitude coupling is stronger for rightward than leftward movements", "M1_hand_L · M1_hand_R"],
         ], columns=["Contrast", "Formula", "Interpretation", "Where to look"]))
         st.caption("Amplitude = peak Euclidean joystick displacement × 100 per trial.")
 
